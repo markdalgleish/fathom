@@ -3,8 +3,8 @@
 
 If you're making a presentation ***on JavaScript***, make it ***in JavaScript***.
 
-Basic Usage
------------
+Usage
+-----
 
 Example HTML:
 
@@ -31,14 +31,18 @@ jQuery Plugin Setup: ```$('#presentation').fathom();```
 
 Advanced Setup: ```var fathom = new Fathom('#presentation');``` 
 
-More Info
----------
+---
 
 Full guide available at the [official Fathom.js project page](http://markdalgleish.com/projects/fathom).
 
 I've included a sample CSS file in the repo to get you started.
 
+---
+
 Please note that Fathom.js is not trying to recreate Powerpoint or Keynote. While they're good tools, I personally find that style of interface to be inappropriate on the web. If you're wondering why feature *x* from Powerpoint is missing, this is probably why.
+
+Contributing to Fathom.js
+-------------------------
 
 If you want to contribute in a way that changes the API, please file an issue before submitting a pull request so we can dicuss how to appropriately integrate your ideas.
 
