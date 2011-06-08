@@ -11,4 +11,4 @@ If you want to contribute in a way that changes the API, please file an issue be
 Questions?
 ----------
 
-Contact me on GitHub or Twitter: @markdalgleish
+Contact me on GitHub or Twitter: [@markdalgleish](http://twitter.com/markdalgleish)
