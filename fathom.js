@@ -237,7 +237,7 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		}				
 	};
 	
-	$.fn.Fathom = function(options){
+	$.fn.fathom = function(options){
 		new Fathom(this, options);
 		return this;
 	};
