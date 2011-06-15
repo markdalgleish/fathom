@@ -169,10 +169,10 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		_setMargins: function() {
 			var displayMode = this.config.displayMode,
 				windowWidth = $window.width(),
-				verticalSpacing = ($window.height() - this.$firstSlide.innerHeight()) / 2,
-				firstSlideSpacing = (windowWidth - this.$firstSlide.innerWidth()) / 2,
-				lastSlideSpacing = (windowWidth - this.$lastSlide.innerWidth()) / 2,
-				peekabooWidth = windowWidth / 25;
+				verticalSpacing = Math.ceil(($window.height() - this.$firstSlide.innerHeight()) / 2),
+				firstSlideSpacing = Math.ceil((windowWidth - this.$firstSlide.innerWidth()) / 2),
+				lastSlideSpacing = Math.ceil((windowWidth - this.$lastSlide.innerWidth()) / 2),
+				peekabooWidth = Math.ceil(windowWidth / 25);
 			
 			this.$container.css('margin-top', verticalSpacing);
 			
