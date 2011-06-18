@@ -27,6 +27,9 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			scrollLength: 600,
 			_autoStyles: true,
 			
+			timeline: undefined,
+			video: undefined,
+			
 			onActivateSlide: undefined,
 			onDeactivateSlide: undefined
 		},
@@ -47,6 +50,8 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 				._setClasses()
 				._setMargins()
 				._setupEvents()
+				._setupTimeline()
+				._setupVideo()
 				._setupScrollHandler();
 			
 			return this;
@@ -189,6 +194,40 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			
 			return this;
 		},
+		
+		_setupTimeline: function() {
+			var slides = this.$slides;
+					
+			function parseTime(point) {
+				for(var m = (point.time || point).toString().match(/(((\d+):)?(\d+):)?(\d+)/), a = 0, i = 3; i <= 5; i++) {
+					a = (a * 60) + m[i];
+				}
+				return a;
+			}
+			
+			function parseSlide(point) {
+				var slide = point.slide || null;
+				if($.type(slide) === 'number') {
+					return slides.eq(s);
+				} else if( slide == null ) {
+					return 'next';
+				} else {
+					return slides.filter( slide ).eq(0);
+				}
+			}
+			
+			if(! this.config.timeline)
+				return this;
+
+			for(var t = this.config.timeline, i = 0; i < t.length; i++) {
+				t[i] = { time: parseTime( t[i] ), slide: parseSlide( t[i] ) };
+			}
+			return this;
+		},
+		
+		_setupVideo: function() {
+			return this;
+		}
 		
 		_setupScrollHandler: function() {
 			var self = this,
