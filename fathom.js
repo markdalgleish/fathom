@@ -296,15 +296,12 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		},
 		
 		_setupVimeoVideo: function(vid) {
-			var self = this;
+			var self = this, vid = this.config.video, downgrade = false;
 			
 			if(window.location.protocol === "file:") {
-				( "console" in window ) && console.log("vimeo video player api does not work with local files. Falling back basic video support\nsee http://vimeo.com/api/docs/player-js");
-				this.config.timeline = null;
-				this.config.video.autoplay = false;
+				( "console" in window ) && console.log("vimeo video player api does not work with local files. Downgrading video support\nsee http://vimeo.com/api/docs/player-js");
+				downgrade = true;
 			}
-
-			var vid = this.config.video, times = this.config.timeline || [], currentSlide;
 
 			function loadFrame() {
 				var id = "p" + vid.id;
@@ -312,7 +309,11 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 				return $( frameSrc ).appendTo( vid.parent || "body" )[0];
 			}
 
-			if( this.config.timeline || this.config.video.autoplay ) {
+			if( downgrade ) {
+				$( loadFrame() ).bind("load", function() {
+					self._setupDefaultTimeSource();
+				});
+			} else {
 				$.getScript("http://a.vimeocdn.com/js/froogaloop2.min.js?", function() {
 					$f( loadFrame() ).addEvent( 'ready', function (player_id) {
 						var vimeo = $f( player_id ), timer = false;
@@ -332,8 +333,6 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 						vid.autoplay && vimeo.api( "play" );
 					} );
 				} );
-			} else {
-				loadFrame();
 			}
 		},
 		
