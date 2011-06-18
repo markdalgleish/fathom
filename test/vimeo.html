@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Fathom.js - Vimeo Video Test</title>
+		<link href="../fathom.sample.css" rel="stylesheet" type="text/css" />
+		<style>
+			BODY { background: black; color: white; font-family: Futura, sans-serif; }
+			H1, H3, A, P, BLOCKQUOTE { display: block; font-size: 130px; text-align: center; margin: 200px 40px 0px; }
+			H3 { font-size: 60px; margin-top: 10px; }
+			BLOCKQUOTE, A, P { font-size: 30px; line-height: 120%;}
+			A { text-decoration: none; color: #fff; margin-top: 150px; }
+			BLOCKQUOTE { font-style: italic; }
+			#vimeo { bottom: 10px; left: 10px; position: fixed; z-index: 10; }
+		</style>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript"></script>
+		<script src="../fathom.js" type="text/javascript"></script>
+		<script type="text/javascript">
+		$( function() {
+			$( "#presentation" ).fathom( {
+				timeline: [ 0, "5", "0:20", { time: 30 }, { time: "40", slide: 4 }, { time: 50, slide: "#slide5" }, "1:00", "1:15", 90, "2:00", { time: "2:35", slide: 0 }
+				],
+				video: {
+					source: "vimeo",
+					id: "16917950",
+					parent: "#vimeo",
+					autoplay: true
+				}
+			} );
+		} );
+		</script>
+	</head>
+	<body>
+		<div id="presentation">
+			<div id="slide0" class="slide">
+				<h1>AURORA</h1>
+			</div>
+			<div id="slide1" class="slide">
+				<h3>Tromsø, Norway.</h3> 
+				<p>Photography: Tor Even Mathisen<br>
+				Music: Per Wollen<br>
+				Vocal: Silje Beate Nilssen</p>
+				<a href="http://tittentem.no">tittentem.no</a>
+			</div>
+			<div id="slide2" class="slide">
+				<p>Auroras are associated with the solar wind, a flow of ions continuously flowing outward from the Sun.</p>
+			</div>
+			<div id="slide3" class="slide">
+				<p>The Earth's magnetic field traps these particles, many of which travel toward the poles where they are accelerated toward Earth.</p>
+			</div>
+			<div id="slide4" class="slide">
+				<p>Collisions between these ions and atmospheric atoms and molecules cause energy releases in the form of auroras appearing in large circles around the poles.</p>
+			</div>
+			<div id="slide5" class="slide">
+				<p>Auroras are more frequent and brighter during the intense phase of the solar cycle when coronal mass ejections increase the intensity of the solar wind.</p>
+			</div>
+			<div id="slide6" class="slide">
+				<h3>oxygen emissions</h3>
+				<p>Green or brownish-red, depending on the amount of energy absorbed.</p>
+			</div>
+			<div id="slide7" class="slide">
+				<h3>nitrogen emissions</h3>
+				<p>Blue or red. Blue if the atom regains an electron after it has been ionized. Red if returning to ground state from an excited state.</p>
+			</div>
+			<div id="slide8" class="slide">
+				<blockquote>The stars are putting on their glittering belts.
+				They throw around their shoulders cloaks that flash
+				Like a great shadow's last embellishment</p>
+			</div>
+			<div id="slide9" class="slide">
+				<blockquote>The Valkyrior are warlike virgins, mounted upon horses and armed with helmets and spears. When they ride forth on their errand, their armour sheds a strange flickering light, which flashes up over the northern skies</blockquote>
+			</div>
+		</div>
+		<div id="vimeo"></div>
+	</body>
+</html>

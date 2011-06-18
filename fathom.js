@@ -231,20 +231,26 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 					
 			function parseTime(point) {
 				for(var m = (point.time || point).toString().match(/(((\d+):)?(\d+):)?(\d+)/), a = 0, i = 3; i <= 5; i++) {
-					a = (a * 60) + m[i];
+					a = (a * 60) + parseInt(m[i] || 0);
 				}
 				return a;
 			}
 			
+			var currentSlide = -1;
 			function parseSlide(point) {
-				var slide = point.slide || null;
-				if($.type(slide) === 'number') {
-					return slides.eq(s);
-				} else if( slide == null ) {
-					return 'next';
+				if($.type(point.slide) === 'number') {
+					currentSlide = point.slide;
+				} else if( point.slide == null ) {
+					currentSlide++;
 				} else {
-					return slides.filter( slide ).eq(0);
+					for(var match = slides.filter( point.slide )[0], i = 0; i < slides.length; i++ ) {
+						if( slides[i] === match ) {
+							currentSlide = i;
+							break;
+						}
+					}
 				}
+				return slides.eq( currentSlide );
 			}
 			
 			if(! this.config.timeline)
@@ -253,12 +259,72 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			for(var t = this.config.timeline, i = 0; i < t.length; i++) {
 				t[i] = { time: parseTime( t[i] ), slide: parseSlide( t[i] ) };
 			}
+			t.push( { time: 99999, slide: t[0].slide } );
 			return this;
 		},
 		
 		_setupVideo: function() {
+			if( !this.config.video ) {
+			} else if( this.config.video.source === "vimeo" ) {
+				this._setupVimeoVideo( this.config.video );
+			} else {
+				throw "unknown video source, not supported";
+			}
 			return this;
-		}
+		},
+		
+		_setupVimeoVideo: function(vid) {
+			var self = this;
+			
+			if(window.location.protocol === "file:") {
+				( "console" in window ) && console.log("vimeo video player api does not work with local files. Falling back basic video support\nsee http://vimeo.com/api/docs/player-js");
+				this.config.timeline = null;
+				this.config.video.autoplay = false;
+			}
+
+			var vid = this.config.video, times = this.config.timeline || [], currentSlide;
+
+			function loadFrame() {
+				var id = "p" + vid.id;
+				var frameSrc = "<iframe id=\"" + id + "\"	width=\""+ ( vid.width || 360 ) + "\" height=\"" + (vid.height || 203 ) + "\" frameborder=\"0\" src=\"http://player.vimeo.com/video/" + vid.id + "?api=1&player_id=" + id + "\">";
+				return $( frameSrc ).appendTo( vid.parent || "body" )[0];
+			}
+
+			function checkTime( t ) {
+				for(var i = 0; i < times.length; i++) {
+					if(times[i].time <= t && times[i+1].time > t) {
+						var mySlide = times[i].slide;
+						break;
+					}
+				}
+				if(currentSlide !== mySlide) {
+					self.scrollToSlide( mySlide );
+					currentSlide = mySlide;
+				}
+			}
+
+			if( this.config.timeline || this.config.video.autoplay ) {
+				$.getScript("http://a.vimeocdn.com/js/froogaloop2.min.js?", function() {
+					$f( loadFrame() ).addEvent( 'ready', function (player_id) {
+						var vimeo = $f( player_id ), timer = false;
+						vimeo.addEvent('play', function(data) {
+							if(timer === false) {	
+								timer = setInterval( function() {
+									vimeo.api('getCurrentTime', function ( value, player_id ) { checkTime( value ); });
+								}, 250 );
+							}
+						});
+						vimeo.addEvent('pause', function(data) {
+							clearInterval(timer);
+							timer = false;
+						});
+						vid.autoplay && vimeo.api( "play" );
+					} );
+				} );
+			} else {
+				loadFrame();
+			}
+		},
 		
 		_setupScrollHandler: function() {
 			var self = this,
