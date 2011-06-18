@@ -1,5 +1,5 @@
 /*
-Fathom.js v1.0
+Fathom.js v1.1
 Copyright 2011, Mark Dalgleish
 
 This content is released under the MIT License
@@ -17,6 +17,9 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 	
 	Fathom.prototype = {
 		defaults: {
+			portable: undefined,
+			portableTagName: 'div',
+			portableClass: 'fathom-container',
 			displayMode: 'single',
 			slideTagName: 'div',
 			slideClass: 'slide',
@@ -25,7 +28,6 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			margin: 100,
 			onScrollInterval: 300,
 			scrollLength: 600,
-			_autoStyles: true,
 			
 			timeline: undefined,
 			video: undefined,
@@ -46,7 +48,8 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			this.$lastSlide = this.$slides.filter(':last');
 			this.$activeSlide = this.activateSlide(this.$firstSlide);
 			
-			this._setStyles()
+			this._detectPortable()
+				._setStyles()
 				._setClasses()
 				._setMargins()
 				._setupEvents()
@@ -76,13 +79,16 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		},
 		
 		scrollToSlide: function($elem) {
-			var self = this;
+			var self = this,
+				$scrollingElement = this.config.portable ? this.$portableContainer : $('html,body'),
+				$container = this.config.portable ? this.$portableContainer : $window,
+				portableScrollLeft = this.config.portable ? this.$portableContainer.scrollLeft() : 0;
 			
 			this.isAutoScrolling = true;
 			
-			$('html,body').stop().animate({
-				scrollLeft: ($elem.position().left - 
-					(($window.width() - $elem.innerWidth()) / 2))
+			$scrollingElement.stop().animate({
+				scrollLeft: ($elem.position().left + portableScrollLeft - 
+					(($container.width() - $elem.innerWidth()) / 2))
 			}, self.config.scrollLength, function() {
 				self.isAutoScrolling = false;
 			});
@@ -123,6 +129,18 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			return $elem;
 		},
 		
+		_detectPortable: function() {
+			if (this.config.portable === undefined) {
+				if (this.$container.parent().is('body')) {
+					this.config.portable = false;
+				} else {
+					this.config.portable = true;
+				}
+			}
+			
+			return this;
+		},
+		
 		_setupEvents: function() {
 			var self = this;
 			
@@ -151,12 +169,16 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		},
 		
 		_setStyles: function() {
-			if (this.config._autoStyles) {
+			if (this.config.portable) {
+				this.$portableContainer = $('<' + this.config.portableTagName + ' class="' + this.config.portableClass + '" />');
+				this.$container.before(this.$portableContainer).appendTo(this.$portableContainer);
+			} else {
 				$('body').width(99999);
-				this.$clearFloats = this.$container.append('<div style="clear:left"></div>');
-				this.$container.css('float','left');
-				this.$slides.css('float','left');
 			}
+			
+			this.$clearFloats = this.$container.append('<div style="clear:left"></div>');
+			this.$container.css('float','left');
+			this.$slides.css('float','left');
 			
 			return this;
 		},
@@ -173,11 +195,12 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		
 		_setMargins: function() {
 			var displayMode = this.config.displayMode,
-				windowWidth = $window.width(),
-				verticalSpacing = Math.ceil(($window.height() - this.$firstSlide.innerHeight()) / 2),
-				firstSlideSpacing = Math.ceil((windowWidth - this.$firstSlide.innerWidth()) / 2),
-				lastSlideSpacing = Math.ceil((windowWidth - this.$lastSlide.innerWidth()) / 2),
-				peekabooWidth = Math.ceil(windowWidth / 25);
+				$container = this.config.portable ? this.$portableContainer : $window,
+				containerWidth = $container.width(),
+				verticalSpacing = Math.ceil(($container.height() - this.$firstSlide.innerHeight()) / 2),
+				firstSlideSpacing = Math.ceil((containerWidth - this.$firstSlide.innerWidth()) / 2),
+				lastSlideSpacing = Math.ceil((containerWidth - this.$lastSlide.innerWidth()) / 2),
+				peekabooWidth = Math.ceil(containerWidth / 25);
 			
 			this.$container.css('margin-top', verticalSpacing);
 			
@@ -190,7 +213,15 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			this.$firstSlide.css('margin-left', firstSlideSpacing);
 			this.$lastSlide.css('margin-right', lastSlideSpacing);
 			
-			$('html,body').width(this.$container.outerWidth());
+			if (!this.config.portable) {
+				$('html,body').width(this.$container.outerWidth());
+			} else {
+				var slidesWidth = parseInt(this.$container.css('padding-left')) + parseInt(this.$container.css('padding-right'));
+				this.$slides.each(function() {
+					slidesWidth += $(this).outerWidth(true);
+				});
+				this.$container.width(slidesWidth);
+			}
 			
 			return this;
 		},
@@ -232,20 +263,27 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		_setupScrollHandler: function() {
 			var self = this,
 				slideSelector = self.config.slideTagName + (self.config.slideClass ? '.' + self.config.slideClass : ''),
+				$scrollContainer = this.config.portable ? this.$portableContainer : $window,
 				$elem;
 			
-			self.scrolling = false;
-			
-			setMidPoints();				
+			self.scrolling = false;			
 			
 			setInterval(function() {
 				if (self.scrolling && (self.isAutoScrolling === false || self.isAutoScrolling === undefined)) {
 					self.scrolling = false;
 					
-					if ($window.scrollLeft() === 0) {
+					if ($scrollContainer.scrollLeft() === 0) {
 						self.activateSlide(self.$firstSlide)
 					} else {
-						$elem = $(document.elementFromPoint(self.midpoint.x, self.midpoint.y));
+						var offsetX = self.config.portable ? $scrollContainer.position().left : 0,
+							offsetY = self.config.portable ? $scrollContainer.position().top : 0,
+							midpoint = {
+								x: offsetX + ($scrollContainer.width() / 2),
+								y: offsetY + ($scrollContainer.height() / 2)
+							};
+						
+						$elem = $(document.elementFromPoint(midpoint.x, midpoint.y));
+						
 						if ($elem.is(slideSelector)) {
 							self.activateSlide($elem);
 						} else {
@@ -257,20 +295,9 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 				}
 			}, self.config.onScrollInterval);
 			
-			$window
-				.scroll(function() {
-					self.scrolling = true;
-				})
-				.resize(function() {
-					setMidPoints();
-				});
-			
-			function setMidPoints() {
-				self.midpoint = {
-					x: ($window.width() / 2),
-					y: ($window.height() / 2)
-				}
-			}
+			$scrollContainer.scroll(function() {
+				self.scrolling = true;
+			});
 			
 			return this;
 		}				
