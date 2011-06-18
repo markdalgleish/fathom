@@ -129,6 +129,18 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			return $elem;
 		},
 		
+		setTime: function( t ) {
+			var times = this._timeline || [];
+			for(var i = 0; i < times.length; i++) {
+				if(times[i].time <= t && times[i+1].time > t) {
+					if(this.$activeSlide[0] !== times[i].slide[0]) {
+						this.scrollToSlide( times[i].slide );
+					}
+					break;
+				}
+			}
+		},
+		
 		_detectPortable: function() {
 			if (this.config.portable === undefined) {
 				if (this.$container.parent().is('body')) {
@@ -238,11 +250,11 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			
 			var currentSlide = -1;
 			function parseSlide(point) {
-				if($.type(point.slide) === 'number') {
-					currentSlide = point.slide;
-				} else if( point.slide == null ) {
+				if( point.slide == null ) {
 					currentSlide++;
-				} else {
+				} else if($.type(point.slide) === 'number') {
+					currentSlide = point.slide;
+				} else{
 					for(var match = slides.filter( point.slide )[0], i = 0; i < slides.length; i++ ) {
 						if( slides[i] === match ) {
 							currentSlide = i;
@@ -256,21 +268,31 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			if(! this.config.timeline)
 				return this;
 
+			this._timeline = [];
 			for(var t = this.config.timeline, i = 0; i < t.length; i++) {
-				t[i] = { time: parseTime( t[i] ), slide: parseSlide( t[i] ) };
+				this._timeline.push({ time: parseTime( t[i] ), slide: parseSlide( t[i] ) });
 			}
-			t.push( { time: 99999, slide: t[0].slide } );
+			this._timeline.push( { time: 99999, slide: t[0].slide } );
 			return this;
 		},
 		
 		_setupVideo: function() {
 			if( !this.config.video ) {
+				this._setupDefaultTimeSource();
 			} else if( this.config.video.source === "vimeo" ) {
 				this._setupVimeoVideo( this.config.video );
 			} else {
 				throw "unknown video source, not supported";
 			}
 			return this;
+		},
+		
+		_setupDefaultTimeSource: function() {
+			var self = this, t0 = (new Date()).getTime();
+			setInterval(function() {
+				var t1 = (new Date()).getTime();
+				self.setTime( (t1 - t0)/1000 );
+			}, 250 );
 		},
 		
 		_setupVimeoVideo: function(vid) {
@@ -290,19 +312,6 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 				return $( frameSrc ).appendTo( vid.parent || "body" )[0];
 			}
 
-			function checkTime( t ) {
-				for(var i = 0; i < times.length; i++) {
-					if(times[i].time <= t && times[i+1].time > t) {
-						var mySlide = times[i].slide;
-						break;
-					}
-				}
-				if(currentSlide !== mySlide) {
-					self.scrollToSlide( mySlide );
-					currentSlide = mySlide;
-				}
-			}
-
 			if( this.config.timeline || this.config.video.autoplay ) {
 				$.getScript("http://a.vimeocdn.com/js/froogaloop2.min.js?", function() {
 					$f( loadFrame() ).addEvent( 'ready', function (player_id) {
@@ -310,7 +319,9 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 						vimeo.addEvent('play', function(data) {
 							if(timer === false) {	
 								timer = setInterval( function() {
-									vimeo.api('getCurrentTime', function ( value, player_id ) { checkTime( value ); });
+									vimeo.api('getCurrentTime', function ( value, player_id ) {
+										self.setTime( value );
+									});
 								}, 250 );
 							}
 						});
