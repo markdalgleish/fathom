@@ -18,8 +18,8 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 	Fathom.prototype = {
 		defaults: {
 			portable: undefined,
-			portableContainerTag: 'div',
-			portableContainerClass: 'fathom-container',
+			portableTagName: 'div',
+			portableClass: 'fathom-container',
 			displayMode: 'single',
 			slideTagName: 'div',
 			slideClass: 'slide',
@@ -165,7 +165,7 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		
 		_setStyles: function() {
 			if (this.config.portable) {
-				this.$portableContainer = $('<' + this.config.portableContainerTag + ' class="' + this.config.portableContainerClass + '" />');
+				this.$portableContainer = $('<' + this.config.portableTagName + ' class="' + this.config.portableClass + '" />');
 				this.$container.before(this.$portableContainer).appendTo(this.$portableContainer);
 			} else {
 				$('body').width(99999);
