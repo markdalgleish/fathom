@@ -29,6 +29,9 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			onScrollInterval: 300,
 			scrollLength: 600,
 			
+			timeline: undefined,
+			video: undefined,
+			
 			onActivateSlide: undefined,
 			onDeactivateSlide: undefined
 		},
@@ -50,6 +53,8 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 				._setClasses()
 				._setMargins()
 				._setupEvents()
+				._setupTimeline()
+				._setupVideo()
 				._setupScrollHandler();
 			
 			return this;
@@ -122,6 +127,18 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			}
 			
 			return $elem;
+		},
+		
+		setTime: function( t ) {
+			var times = this._timeline || [];
+			for(var i = 0; i < times.length; i++) {
+				if(times[i].time <= t && times[i+1].time > t) {
+					if(this.$activeSlide[0] !== times[i].slide[0]) {
+						this.scrollToSlide( times[i].slide );
+					}
+					break;
+				}
+			}
 		},
 		
 		_detectPortable: function() {
@@ -219,6 +236,104 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			}
 			
 			return this;
+		},
+		
+		_setupTimeline: function() {
+			var slides = this.$slides;
+					
+			function parseTime(point) {
+				for(var m = (point.time || point).toString().match(/(((\d+):)?(\d+):)?(\d+)/), a = 0, i = 3; i <= 5; i++) {
+					a = (a * 60) + parseInt(m[i] || 0);
+				}
+				return a;
+			}
+			
+			var currentSlide = -1;
+			function parseSlide(point) {
+				if( point.slide == null ) {
+					currentSlide++;
+				} else if($.type(point.slide) === 'number') {
+					currentSlide = point.slide;
+				} else{
+					for(var match = slides.filter( point.slide )[0], i = 0; i < slides.length; i++ ) {
+						if( slides[i] === match ) {
+							currentSlide = i;
+							break;
+						}
+					}
+				}
+				return slides.eq( currentSlide );
+			}
+			
+			if(! this.config.timeline)
+				return this;
+
+			this._timeline = [];
+			for(var t = this.config.timeline, i = 0; i < t.length; i++) {
+				this._timeline.push({ time: parseTime( t[i] ), slide: parseSlide( t[i] ) });
+			}
+			this._timeline.push( { time: 99999, slide: t[0].slide } );
+			return this;
+		},
+		
+		_setupVideo: function() {
+			if( !this.config.video ) {
+				this._setupDefaultTimeSource();
+			} else if( this.config.video.source === "vimeo" ) {
+				this._setupVimeoVideo( this.config.video );
+			} else {
+				throw "unknown video source, not supported";
+			}
+			return this;
+		},
+		
+		_setupDefaultTimeSource: function() {
+			var self = this, t0 = (new Date()).getTime();
+			setInterval(function() {
+				var t1 = (new Date()).getTime();
+				self.setTime( (t1 - t0)/1000 );
+			}, 250 );
+		},
+		
+		_setupVimeoVideo: function(vid) {
+			var self = this, vid = this.config.video, downgrade = false;
+			
+			if(window.location.protocol === "file:") {
+				( "console" in window ) && console.log("vimeo video player api does not work with local files. Downgrading video support\nsee http://vimeo.com/api/docs/player-js");
+				downgrade = true;
+			}
+
+			function loadFrame() {
+				var id = "p" + vid.id;
+				var frameSrc = "<iframe id=\"" + id + "\"	width=\""+ ( vid.width || 360 ) + "\" height=\"" + (vid.height || 203 ) + "\" frameborder=\"0\" src=\"http://player.vimeo.com/video/" + vid.id + "?api=1&player_id=" + id + "\">";
+				return $( frameSrc ).appendTo( vid.parent || "body" )[0];
+			}
+
+			if( downgrade ) {
+				$( loadFrame() ).bind("load", function() {
+					self._setupDefaultTimeSource();
+				});
+			} else {
+				$.getScript("http://a.vimeocdn.com/js/froogaloop2.min.js?", function() {
+					$f( loadFrame() ).addEvent( 'ready', function (player_id) {
+						var vimeo = $f( player_id ), timer = false;
+						vimeo.addEvent('play', function(data) {
+							if(timer === false) {	
+								timer = setInterval( function() {
+									vimeo.api('getCurrentTime', function ( value, player_id ) {
+										self.setTime( value );
+									});
+								}, 250 );
+							}
+						});
+						vimeo.addEvent('pause', function(data) {
+							clearInterval(timer);
+							timer = false;
+						});
+						vid.autoplay && vimeo.api( "play" );
+					} );
+				} );
+			}
 		},
 		
 		_setupScrollHandler: function() {
