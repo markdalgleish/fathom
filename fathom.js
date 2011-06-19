@@ -1,5 +1,5 @@
 /*
-Fathom.js v1.1
+Fathom.js v1.2
 Copyright 2011, Mark Dalgleish
 
 This content is released under the MIT License
