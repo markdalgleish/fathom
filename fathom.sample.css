@@ -51,6 +51,11 @@ input:focus {
 	outline: 0;
 }
 
+#presentation {
+	vertical-align: top;
+	white-space: nowrap;
+}
+
 div.slide {
 	-webkit-box-shadow: 0 0 50px #c0c0c0;
 	-moz-box-shadow: 0 0 50px #c0c0c0;
@@ -60,10 +65,12 @@ div.slide {
 	border-radius: 20px;
 	-moz-background-clip: padding;
 	-webkit-background-clip: padding-box;
-	background-clip: padding-box; 
+	background-clip: padding-box;
+	display: inline-block;
 	height: 700px;
 	padding: 20px;
 	position: relative;
+	vertical-align: top;
 	width: 900px;
 }
 	div.inactiveslide {

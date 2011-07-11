@@ -1,5 +1,5 @@
 /*
-Fathom.js v1.2
+Fathom.js v1.2.1
 Copyright 2011, Mark Dalgleish
 
 This content is released under the MIT License
@@ -37,8 +37,6 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		},
 		
 		init: function() {
-			var self = this;
-			
 			this.config = $.extend({}, this.defaults, this.options);
 			
 			this.$container = $(this.container);
@@ -48,7 +46,8 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			this.$lastSlide = this.$slides.filter(':last');
 			this.$activeSlide = this.activateSlide(this.$firstSlide);
 			
-			this._detectPortable()
+			return this
+				._detectPortable()
 				._setStyles()
 				._setClasses()
 				._setMargins()
@@ -56,26 +55,14 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 				._setupTimeline()
 				._setupVideo()
 				._setupScrollHandler();
-			
-			return this;
 		},
 		
 		nextSlide: function() {
-			var $next = this.$activeSlide.next();
-			if ($next.length === 1 && $next.hasClass(this.config.slideClass)) {
-				this.scrollToSlide($next);
-			}
-			
-			return $next;
+			return this.scrollToSlide(this.$activeSlide.next());
 		},
 		
 		prevSlide: function() {
-			var $prev = this.$activeSlide.prev();
-			if ($prev.length === 1) {
-				this.scrollToSlide($prev);
-			}
-			
-			return $prev;
+			return this.scrollToSlide(this.$activeSlide.prev());
 		},
 		
 		scrollToSlide: function($elem) {
@@ -83,6 +70,10 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 				$scrollingElement = this.config.portable ? this.$portableContainer : $('html,body'),
 				$container = this.config.portable ? this.$portableContainer : $window,
 				portableScrollLeft = this.config.portable ? this.$portableContainer.scrollLeft() : 0;
+			
+			if ($elem.length !== 1) {
+				return $elem;
+			}
 			
 			this.isAutoScrolling = true;
 			
@@ -181,16 +172,18 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 		},
 		
 		_setStyles: function() {
+			this.$container.css('white-space', 'nowrap');
+			
+			this.$slides.css({
+				'white-space': 'normal',
+				'display': 'inline-block',
+				'vertical-align': 'top'
+			});
+			
 			if (this.config.portable) {
 				this.$portableContainer = $('<' + this.config.portableTagName + ' class="' + this.config.portableClass + '" />');
 				this.$container.before(this.$portableContainer).appendTo(this.$portableContainer);
-			} else {
-				$('body').width(99999);
 			}
-			
-			this.$clearFloats = this.$container.append('<div style="clear:left"></div>');
-			this.$container.css('float','left');
-			this.$slides.css('float','left');
 			
 			return this;
 		},
@@ -225,9 +218,7 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			this.$firstSlide.css('margin-left', firstSlideSpacing);
 			this.$lastSlide.css('margin-right', lastSlideSpacing);
 			
-			if (!this.config.portable) {
-				$('html,body').width(this.$container.outerWidth());
-			} else {
+			if (this.config.portable) {
 				var slidesWidth = parseInt(this.$container.css('padding-left')) + parseInt(this.$container.css('padding-right'));
 				this.$slides.each(function() {
 					slidesWidth += $(this).outerWidth(true);
