@@ -41,6 +41,13 @@ I've included a sample CSS file in the repo to get you started.
 
 Please note that Fathom.js is not trying to recreate Powerpoint or Keynote. While they're good tools, I personally find that style of interface to be inappropriate on the web. If you're wondering why feature *x* from Powerpoint is missing, this is probably why.
 
+How to Build
+------------
+
+The code is minified using UglifyJS using the following command:
+
+`uglifyjs -o fathom.min.js fathom.js`
+
 Contributing to Fathom.js
 -------------------------
 
