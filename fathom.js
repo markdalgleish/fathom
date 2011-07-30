@@ -1,10 +1,11 @@
 /*
-Fathom.js v1.2.1
+Fathom.js v1.2.2
 Copyright 2011, Mark Dalgleish
 
 This content is released under the MIT License
 github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 */
+
 (function($, window, undefined){
 	var Fathom = function(container, options){
 			this.container = container;
@@ -331,6 +332,7 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			var self = this,
 				slideSelector = self.config.slideTagName + (self.config.slideClass ? '.' + self.config.slideClass : ''),
 				$scrollContainer = this.config.portable ? this.$portableContainer : $window,
+				isIOS = navigator.userAgent.match(/like Mac OS X/i) === null ? false : true,
 				$elem;
 			
 			self.scrolling = false;			
@@ -345,8 +347,8 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 						var offsetX = self.config.portable ? $scrollContainer.position().left : 0,
 							offsetY = self.config.portable ? $scrollContainer.position().top : 0,
 							midpoint = {
-								x: offsetX + ($scrollContainer.width() / 2),
-								y: offsetY + ($scrollContainer.height() / 2)
+								x: offsetX + ($scrollContainer.width() / 2) + (isIOS ? $window.scrollLeft() : 0),
+								y: offsetY + ($scrollContainer.height() / 2) + (isIOS ? $window.scrollTop() : 0)
 							};
 						
 						$elem = $(document.elementFromPoint(midpoint.x, midpoint.y));

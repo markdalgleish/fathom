@@ -79,3 +79,17 @@ div.slide {
 	div.activeslide {
 		opacity: 1;
 	}
+
+/* iPad */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+	div.inactiveslide {
+		opacity: 1;
+	}
+}
+
+/* iPhone */
+@media only screen and (max-device-width: 480px) {
+	div.inactiveslide {
+		opacity: 1;
+	}
+}
