@@ -8,22 +8,24 @@ Usage
 
 Example HTML:
 
-&lt;div id="presentation"&gt;
+```
+<div id="presentation">
 
-  &lt;div class="slide"&gt;
-    &lt;h1&gt;My Presentation&lt;/h1&gt;
-  &lt;/div&gt;
+  <div class="slide">
+    <h1>My Presentation</h1>
+  </div>
   
-  &lt;div class="slide"&gt;
-    &lt;h2&gt;My Dot Points&lt;/h2&gt;
-    &lt;ul&gt;
-      &lt;li&gt;First dot point&lt;/li&gt;
-      &lt;li&gt;Second dot point&lt;/li&gt;
-      &lt;li&gt;Third dot point&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/div&gt;
+  <div class="slide">
+    <h2>My Dot Points</h2>
+    <ul>
+      <li>First dot point</li>
+      <li>Second dot point</li>
+      <li>Third dot point</li>
+    </ul>
+  </div>
   
-&lt;/div&gt;
+</div>
+```
 
 ---
 
