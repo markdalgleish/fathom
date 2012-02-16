@@ -1,5 +1,5 @@
 /*
-Fathom.js v1.2.2
+Fathom.js v1.2.3
 Copyright 2011, Mark Dalgleish
 
 This content is released under the MIT License
@@ -29,6 +29,7 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			margin: 100,
 			onScrollInterval: 300,
 			scrollLength: 600,
+			easing: 'swing',
 			
 			timeline: undefined,
 			video: undefined,
@@ -81,7 +82,7 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			$scrollingElement.stop().animate({
 				scrollLeft: ($elem.position().left + portableScrollLeft - 
 					(($container.width() - $elem.innerWidth()) / 2))
-			}, self.config.scrollLength, function() {
+			}, self.config.scrollLength, self.config.easing, function() {
 				self.isAutoScrolling = false;
 			});
 			
