@@ -1,10 +1,10 @@
 /*
-Fathom.js v1.2.3
-Copyright 2011, Mark Dalgleish
-
-This content is released under the MIT License
-github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
-*/
+ * Fathom.js v1.2.4
+ * Copyright 2012, Mark Dalgleish
+ *
+ * This content is released under the MIT License
+ * markdalgleish.mit-license.org
+ */
 
 (function($, window, undefined){
 	var Fathom = function(container, options){
@@ -195,7 +195,7 @@ github.com/markdalgleish/fathom/blob/master/MIT-LICENSE.txt
 			
 			this.$activeSlide
 				.removeClass(this.config.inactiveClass)
-				.addClass(this.config.inactiveClass);
+				.addClass(this.config.activeClass);
 			
 			return this;
 		},
