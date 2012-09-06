@@ -1,14 +1,13 @@
-[Fathom.js](http://markdalgleish.com/projects/fathom) - Present JavaScript in its native environment.
-=====================================================================================================
+# [Fathom.js](http://markdalgleish.com/projects/fathom) [![endorse](http://api.coderwall.com/markdalgleish/endorsecount.png)](http://coderwall.com/markdalgleish)
+## Present JavaScript in its native environment.
 
 If you're making a presentation ***on JavaScript***, make it ***in JavaScript***.
 
-Usage
------
+## Usage
 
 Example HTML:
 
-```
+``` html
 <div id="presentation">
 
   <div class="slide">
@@ -29,9 +28,15 @@ Example HTML:
 
 ---
 
-jQuery Plugin Setup: ```$('#presentation').fathom();```
+jQuery Plugin Setup:
+``` js
+$('#presentation').fathom();
+```
 
-Advanced Setup: ```var fathom = new Fathom('#presentation');``` 
+Advanced Setup:
+``` js
+var fathom = new Fathom('#presentation');
+```
 
 ---
 
@@ -43,19 +48,16 @@ I've included a sample CSS file in the repo to get you started.
 
 Please note that Fathom.js is not trying to recreate Powerpoint or Keynote. While they're good tools, I personally find that style of interface to be inappropriate on the web. If you're wondering why feature *x* from Powerpoint is missing, this is probably why.
 
-How to Build
-------------
+## How to Build
 
 The code is minified using UglifyJS using the following command:
 
 `uglifyjs -o fathom.min.js fathom.js`
 
-Contributing to Fathom.js
--------------------------
+## Contributing to Fathom.js
 
 If you want to contribute in a way that changes the API, please file an issue before submitting a pull request so we can dicuss how to appropriately integrate your ideas.
 
-Questions?
-----------
+## Questions?
 
 Contact me on GitHub or Twitter: [@markdalgleish](http://twitter.com/markdalgleish)
