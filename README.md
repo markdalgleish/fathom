@@ -1,5 +1,6 @@
 # [Fathom.js](http://markdalgleish.com/projects/fathom) [![endorse](http://api.coderwall.com/markdalgleish/endorsecount.png)](http://coderwall.com/markdalgleish)
-## Present JavaScript in its native environment.
+
+### Present JavaScript in its native environment.
 
 If you're making a presentation ***on JavaScript***, make it ***in JavaScript***.
 
