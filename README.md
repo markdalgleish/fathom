@@ -1,3 +1,5 @@
+**PLEASE NOTE:** This project is no longer maintained. Instead, you should check out [Bespoke.js](https://github.com/markdalgleish/bespoke.js).
+
 # [Fathom.js](http://markdalgleish.com/projects/fathom) [![endorse](http://api.coderwall.com/markdalgleish/endorsecount.png)](http://coderwall.com/markdalgleish)
 
 ### Present JavaScript in its native environment.
