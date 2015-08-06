@@ -1,6 +1,6 @@
 /*
- * Fathom.js v1.2.4
- * Copyright 2012, Mark Dalgleish
+ * Fathom.js v1.2.5
+ * Copyright 2012-15, Mark Dalgleish
  *
  * This content is released under the MIT License
  * markdalgleish.mit-license.org
